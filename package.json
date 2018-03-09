@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "pm2 startOrReload ecosystem.config.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "pm2": "^2.10.1"
+  },
+  "dependencies": {
+    "ts-node": "^5.0.1",
+    "typescript": "^2.7.2"
   }
 }
