@@ -1,10 +1,13 @@
 import * as Router from 'koa-router';
 
+import { FooController } from './controller/foo';
+
 const router = new Router();
 
-router.get('/', (ctx, next) => {
-    ctx.body = 'hello 123';
-    next();
-});
+// loader for sure
+
+router.get('/', new FooController().foo);
+
+// router.all('/api', Controller.asView());
 
 export default router;

@@ -28,6 +28,10 @@ const initApp = async (app: Koa): Promise<Koa> => {
   }));
   app.use(cors());
   app.use(bodyparser());
+  // import { loadController } from './controller'
+  // import { loadRouter } from './router'
+  //loadController(app);
+  //loadRouter(app);
   app.use(router.routes());
   app.use(router.allowedMethods());
   return app;
