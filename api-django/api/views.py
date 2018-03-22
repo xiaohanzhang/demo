@@ -1,26 +1,45 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.views import View
+from rest_framework import viewsets, filters, renderers
+from rest_framework.response import Response
+from rest_framework.decorators import list_route
+from openapi_codec import OpenAPICodec
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db import connection
+from .models import Tenant, Job
+from .serializers import TenantSerializer, JobSerializer
 
-print('init api.views')
 
-# Create your views here.
-def index(request):
-    return HttpResponse('hello')
+class SwaggerRenderer(renderers.BaseRenderer):
+    media_type = 'application/openapi+json'
+    format = 'swagger'
 
-class MyView(View):
+    def render(self, data, media_type=None, renderer_context=None):
+        codec = OpenAPICodec()
+        return codec.dump(data)
 
-    @classmethod
-    def as_view(cls, **kwargs):
-        print('init MyView.as_view')
-        return super(MyView, cls).as_view(**kwargs)
 
-    def __init__(self, *args, **kwargs):
-        print('init MyView')
-        super(MyView, self)
+class TenantViewSet(viewsets.ModelViewSet):
+    queryset = Tenant.objects.all()
+    serializer_class = TenantSerializer
 
-    def get(self, request, *args, **kwargs):
-        return HttpResponse('Hello, View!')
 
+class JobViewSet(viewsets.ModelViewSet):
+    queryset = Job.objects.all().select_related('tenant').prefetch_related('orders__items')
+    serializer_class = JobSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
+    search_fields = ('job_name', 'job_number', 'tenant__tenant_name')
+    ordering_fields = ('date_created',)
+
+    def list(self, request, *args, **kwargs):
+        response = super(JobViewSet, self).list(request, *args, **kwargs)
+        return response
+
+    @list_route(methods=['get'])
+    def complex_example(self, request):
+        qs = self.get_queryset()
+        qs = qs.filter(tenant__tenant_name__icontains='vandelay')[:20]
+        serializer = self.get_serializer(qs, many=True)
+        response = Response(serializer.data)
+        print(connection.queries)
+        return response
 
 
