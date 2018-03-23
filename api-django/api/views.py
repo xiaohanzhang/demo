@@ -4,6 +4,7 @@ from rest_framework.decorators import list_route
 from openapi_codec import OpenAPICodec
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db import connection
+from django.db.models import Q
 from .models import Tenant, Job
 from .serializers import TenantSerializer, JobSerializer
 
@@ -35,8 +36,12 @@ class JobViewSet(viewsets.ModelViewSet):
 
     @list_route(methods=['get'])
     def complex_example(self, request):
-        qs = self.get_queryset()
-        qs = qs.filter(tenant__tenant_name__icontains='vandelay')[:20]
+        qs = (
+            self
+            .get_queryset()
+            .filter(tenant__tenant_name__icontains='vandelay')
+            .filter(Q(orders__order_type='PRESENTATION') | Q(tenant__hidden=True))
+        )[:20]
         serializer = self.get_serializer(qs, many=True)
         response = Response(serializer.data)
         print(connection.queries)
