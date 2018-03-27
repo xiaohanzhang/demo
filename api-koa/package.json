@@ -28,6 +28,7 @@
     "koa-router": "^7.3.0",
     "koa-static": "^4.0.2",
     "lodash": "^4.17.4",
+    "mysql": "^2.15.0",
     "reflect-metadata": "^0.1.12",
     "typeorm": "^0.1.14",
     "zlib": "^1.0.5"

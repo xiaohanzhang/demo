@@ -1,17 +1,17 @@
 import {
-    Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinTable, BaseEntity
+    Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinTable, BaseEntity, JoinColumn
 } from 'typeorm';
 
 @Entity('tenants')
 export class Tenant extends BaseEntity {
 
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('uuid', { name: 'tenant_id' })
     tenantId: string;
 
-    @Column()
+    @Column('varchar', { name: 'tenant_name' })
     tenantName: string;
 
-    @Column({
+    @Column('tinyint', {
         default: true,
     })
     active: boolean;
@@ -19,27 +19,27 @@ export class Tenant extends BaseEntity {
     @OneToMany((type) => Job, (job) => job.tenant)
     jobs: Job[];
 
-    @OneToMany((type) => Order, (order) => order.tenant, { eager: true })
-    @JoinTable()
+    @OneToMany((type) => Order, (order) => order.tenant)
     orders: Order[];
 }
 
 @Entity('jobs')
 export class Job extends BaseEntity {
 
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('uuid', { name: 'job_id' })
     jobId: string;
 
-    @ManyToOne((type) => Tenant, (tenant) => tenant.jobs)
+    @ManyToOne((type) => Tenant, (tenant) => tenant.jobs, { eager: true })
+    @JoinColumn({ name: 'tenant_id' })
     tenant: Tenant;
 
-    @Column()
+    @Column('varchar', { name: 'job_name' })
     jobName: string;
 
-    @Column()
+    @Column('int', { name: 'job_number' })
     jobNumber: number;
 
-    @Column({
+    @Column('tinyint', {
         default: true,
     })
     active: boolean;
@@ -51,22 +51,24 @@ export class Job extends BaseEntity {
 @Entity('orders')
 export class Order extends BaseEntity {
 
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('uuid', { name: 'order_id' })
     orderId: string;
 
     @ManyToOne((type) => Tenant, (tenant) => tenant.orders)
+    @JoinColumn({ name: 'tenant_id' })
     tenant: Tenant;
 
     @ManyToOne((type) => Job, (job) => job.orders)
+    @JoinColumn({ name: 'job_id' })
     job: Job;
 
-    @Column()
+    @Column('varchar', { name: 'order_type' })
     orderType: string;
 
-    @Column()
+    @Column('int', { name: 'form_number' })
     formNumber: number;
 
-    @Column({
+    @Column('tinyint', {
         default: true,
     })
     active: boolean;
@@ -78,12 +80,13 @@ export class Order extends BaseEntity {
 @Entity('items')
 export class Item extends BaseEntity {
 
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('uuid', { name: 'order_id' })
     orderId: string;
 
     @ManyToOne((type) => Order, (order) => order.items)
+    @JoinColumn({ name: 'order_id' })
     order: Order;
 
-    @Column()
+    @Column('varchar', { name: 'item_name' })
     itemName: string;
 }

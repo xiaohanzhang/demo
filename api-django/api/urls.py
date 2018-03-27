@@ -2,11 +2,12 @@ from django.urls import path, include
 from rest_framework import routers, documentation
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from .views import TenantViewSet, JobViewSet, SwaggerRenderer
+from .views import TenantViewSet, JobViewSet, ClientViewSet
 
 router = routers.DefaultRouter()
 router.register(r'tenants', TenantViewSet)
 router.register(r'jobs', JobViewSet)
+router.register(r'clients', ClientViewSet)
 
 schema_view = get_schema_view(
     openapi.Info(

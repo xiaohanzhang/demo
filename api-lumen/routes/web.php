@@ -14,3 +14,10 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+Route::prefix('api')->group(function () {
+    Route::get('/t', function () {
+        return 'hello';
+    });
+});
+
