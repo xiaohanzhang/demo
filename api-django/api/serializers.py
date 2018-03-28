@@ -70,10 +70,10 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class PhoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Phone
-        exclude = ('id', 'active', 'parent_id',)
+        exclude = ('id', 'active', 'parent_id', 'created_by')
 
     phone_id = serializers.UUIDField(read_only=True, source='pk')
-    created_by = UserSerializer(many=False, read_only=True)
+    # created_by = UserSerializer(many=False, read_only=True)
 
 
 class TaxSerializer(serializers.ModelSerializer):
