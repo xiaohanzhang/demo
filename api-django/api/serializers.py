@@ -124,11 +124,11 @@ class CurrencySerializer(serializers.ModelSerializer):
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        exclude = ('id', 'active', 'parent_contact')
+        exclude = ('id', 'active', 'parent_contact', 'created_by')
 
     contact_id = serializers.UUIDField(read_only=True, source='pk')
     contact_default_phone = PhoneSerializer(many=False, read_only=True)
-    created_by = UserSerializer(many=False, read_only=True)
+    # created_by = UserSerializer(many=False, read_only=True)
     contact_department = DepartmentSerializer(many=False, read_only=True)
 
 
@@ -138,24 +138,12 @@ class ClientSerializer(serializers.ModelSerializer):
         exclude = (
             'id', 'active', 'parent', 'parent_client', 'date_merged', 'qbo_customer_ref',
             'xero_contact_id', 'latest_use', 'date_quickbooks', 'quickbooks_id', 'priority',
-            'prospect', 'tenant', 'secondary_contact', 'tertiary_contact', 'merged_by'
+            'prospect', 'tenant', 'secondary_contact', 'tertiary_contact', 'merged_by', 'created_by'
         )
         read_only_fields = ('client_id', 'date_created')
         # depth = 1
         # extra_kwargs
         # validators
-        '''
-                exclude = ('id',)
-        fields = (
-            'client_id', 'client_name', 'prospect', 'tenant', 'client_website', 'client_facebook',
-            'client_twitter', 'client_tenant_account_number', 'client_order_margin_minimum',
-            'sales_target', 'priority', 'primary_contact', 'secondary_contact', 'tertiary_contact',
-            'industry', 'default_tax', 'default_terms', 'default_currency', 'sales_rep', 'client_tags',
-            'client_profile', 'account_status', 'commission_client_rate', 'created_by', 'parent_client',
-            'quickbooks_id', 'date_quickbooks', 'latest_use', 'xero_contact_id', 'qbo_customer_ref',
-            'date_merged', 'merged_by', 'date_created', 'active'
-        )
-        '''
 
     client_id = serializers.UUIDField(read_only=True, source='pk')
     # tenant = TenantSerializer(many=False, read_only=True)
@@ -169,5 +157,5 @@ class ClientSerializer(serializers.ModelSerializer):
     sales_rep = UserSerializer(many=False, read_only=True)
     account_status = StatusSerializer(many=False, read_only=True)
     commission_client_rate = CommissionClientRateSerializer(many=False, read_only=True)
-    created_by = UserSerializer(many=False, read_only=True)
+    # created_by = UserSerializer(many=False, read_only=True)
     # merged_by = UserSerializer(many=False, read_only=True)
