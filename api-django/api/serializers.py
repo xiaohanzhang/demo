@@ -136,7 +136,11 @@ class ContactSerializer(serializers.ModelSerializer):
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        exclude = ('id', 'active', 'parent', 'parent_client')
+        exclude = (
+            'id', 'active', 'parent', 'parent_client', 'date_merged', 'qbo_customer_ref',
+            'xero_contact_id', 'latest_use', 'date_quickbooks', 'quickbooks_id', 'priority',
+            'prospect', 'tenant', 'secondary_contact', 'tertiary_contact', 'merged_by'
+        )
         read_only_fields = ('client_id', 'date_created')
         # depth = 1
         # extra_kwargs
@@ -155,10 +159,10 @@ class ClientSerializer(serializers.ModelSerializer):
         '''
 
     client_id = serializers.UUIDField(read_only=True, source='pk')
-    tenant = TenantSerializer(many=False, read_only=True)
+    # tenant = TenantSerializer(many=False, read_only=True)
     primary_contact = ContactSerializer(many=False, read_only=True)
-    secondary_contact = ContactSerializer(many=False, read_only=True)
-    tertiary_contact = ContactSerializer(many=False, read_only=True)
+    # secondary_contact = ContactSerializer(many=False, read_only=True)
+    # tertiary_contact = ContactSerializer(many=False, read_only=True)
     industry = IndustrySerializer(many=False, read_only=True)
     default_tax = TaxSerializer(many=False, read_only=True)
     default_terms = TermsSerializer(many=False, read_only=True)
@@ -167,4 +171,4 @@ class ClientSerializer(serializers.ModelSerializer):
     account_status = StatusSerializer(many=False, read_only=True)
     commission_client_rate = CommissionClientRateSerializer(many=False, read_only=True)
     created_by = UserSerializer(many=False, read_only=True)
-    merged_by = UserSerializer(many=False, read_only=True)
+    # merged_by = UserSerializer(many=False, read_only=True)
