@@ -25,7 +25,7 @@ class Phone(SoftDeleteModel):
 
     id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=36, db_column='phone_id')
     phone_number = models.CharField(max_length=20)
-    phone_extension = models.CharField(max_length=10)
+    phone_extension = models.CharField(max_length=10, default='')
     # TODO: fix enum field
     phone_type = models.CharField(
         max_length=63,
@@ -51,7 +51,6 @@ class Phone(SoftDeleteModel):
         )
     )
     parent_id = models.CharField(max_length=36)
-    created_by = models.ForeignKey('User', on_delete=models.DO_NOTHING)
 
 
 class File(models.Model):
@@ -122,7 +121,6 @@ class Address(SoftDeleteModel):
             ('TENANT-ACCOUNT', 'TENANT-ACCOUNT',),
         )
     )
-    created_by = models.ForeignKey('User', on_delete=models.DO_NOTHING)
 
 
 class Contact(SoftDeleteModel):
@@ -142,11 +140,10 @@ class Contact(SoftDeleteModel):
     contact_default_address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True)
     contact_no_marketing = models.BooleanField(default=False)
     contact_image = models.ForeignKey('File', on_delete=models.SET_NULL, null=True)
-    contact_tags = models.TextField()
+    contact_tags = models.TextField(default='')
     contact_invitation = models.ForeignKey('UserInvitation', on_delete=models.DO_NOTHING, default='')
     contact_department = models.ForeignKey('Department', on_delete=models.SET_NULL, null=True)
     parent_contact = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
-    created_by = models.ForeignKey('User', on_delete=models.SET_NULL, null=True)
 
 
 class JobTemplate(models.Model):
@@ -179,7 +176,6 @@ class Tenant(SoftDeleteModel):
     tenant_terms_and_conditions = models.TextField()
     tenant_default_address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True)
     tenant_default_job_template = models.ForeignKey('JobTemplate', on_delete=models.SET_NULL, null=True)
-    created_by = models.ForeignKey('User', on_delete=models.SET_NULL, null=True)
     default_currency = models.ForeignKey('Currency', on_delete=models.SET_NULL, null=True, default='USD')
     hidden = models.BooleanField(default=False)
 
@@ -265,7 +261,6 @@ class Industry(SoftDeleteModel):
         primary_key=True, default=uuid.uuid4, max_length=36, db_column='industry_id')
     tenant = models.ForeignKey('Tenant', related_name='industries',  on_delete=models.PROTECT)
     industry_name = models.CharField(max_length=100)
-    created_by = models.ForeignKey('User', on_delete=models.PROTECT)
 
 
 class Tax(SoftDeleteModel):
@@ -275,12 +270,11 @@ class Tax(SoftDeleteModel):
     id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=36, db_column='tax_id')
     tenant = models.ForeignKey('Tenant', related_name='taxes',  on_delete=models.PROTECT)
     label = models.CharField(max_length=10)
-    description = models.TextField()
+    description = models.TextField(default='')
     percent = models.DecimalField(max_digits=10, decimal_places=3, default=None, null=True)
-    tenant_registration = models.CharField(max_length=100)
+    tenant_registration = models.CharField(max_length=100, default='')
     tax_exempt = models.BooleanField(default=False)
     editable = models.BooleanField(default=True)
-    created_by = models.ForeignKey('User', on_delete=models.PROTECT)
 
 
 class Terms(SoftDeleteModel):
@@ -289,9 +283,8 @@ class Terms(SoftDeleteModel):
 
     id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=36, db_column='terms_id')
     terms_name = models.CharField(max_length=100)
-    days_to_add = models.IntegerField()
+    days_to_add = models.IntegerField(default=0)
     display_order = models.IntegerField(default=None, null=True)
-    created_by = models.ForeignKey('User', on_delete=models.PROTECT)
 
 
 class Currency(models.Model):
@@ -311,7 +304,7 @@ class Status(models.Model):
     id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=36, db_column='status_id')
     parent_type = models.CharField(max_length=20)
     status_name = models.CharField(max_length=25)
-    flow_order = models.IntegerField()
+    flow_order = models.IntegerField(default=0)
 
 
 class CommissionClientRate(models.Model):
@@ -329,16 +322,17 @@ class Client(SoftDeleteModel):
     class Meta:
         db_table = 'clients'
 
-    id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=36, db_column='client_id')
+    id = models.CharField(
+        primary_key=True, default=uuid.uuid4, max_length=36, db_column='client_id')
     tenant = models.ForeignKey('Tenant', related_name='clients',  on_delete=models.SET_NULL, null=True)
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='+')
     prospect = models.BooleanField(default=False)
     client_name = models.CharField(max_length=255)
-    client_website = models.CharField(max_length=255)
-    client_facebook = models.CharField(max_length=255)
-    client_twitter = models.CharField(max_length=255)
-    client_tenant_account_number = models.CharField(max_length=255)
-    client_order_margin_minimum = models.DecimalField(max_digits=10, decimal_places=4)
+    client_website = models.URLField(max_length=255, default='')
+    client_facebook = models.URLField(max_length=255, default='')
+    client_twitter = models.URLField(max_length=255, default='')
+    client_tenant_account_number = models.CharField(max_length=255, default='')
+    client_order_margin_minimum = models.DecimalField(max_digits=10, decimal_places=4, default=0.00)
     sales_target = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     # TODO: fix enum field
     priority = models.CharField(
@@ -358,17 +352,15 @@ class Client(SoftDeleteModel):
     default_terms = models.ForeignKey('Terms', on_delete=models.DO_NOTHING)
     default_currency = models.ForeignKey('Currency', on_delete=models.DO_NOTHING)
     sales_rep = models.ForeignKey('User', on_delete=models.DO_NOTHING, related_name='+')
-    client_tags = models.CharField(max_length=200)
-    client_profile = models.TextField()
+    client_tags = models.CharField(max_length=200, default='')
+    client_profile = models.TextField(default='')
     account_status = models.ForeignKey('Status', on_delete=models.SET_NULL, null=True)
     commission_client_rate = models.ForeignKey('CommissionClientRate', on_delete=models.SET_NULL, null=True)
-    created_by = models.ForeignKey('User', on_delete=models.DO_NOTHING, related_name='+')
     parent_client = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='+')
     quickbooks_id = models.CharField(max_length=100, default='')
-    date_quickbooks = models.DateTimeField()
+    date_quickbooks = models.DateTimeField(default='0000-00-00 00:00:00')
     latest_use = models.DateTimeField(auto_now=True)
     xero_contact_id = models.CharField(max_length=36, default=None, null=True)
     qbo_customer_ref = models.IntegerField(default=None, null=True)
-    date_merged  = models.DateTimeField(default='0000-00-00 00:00:00')
-    merged_by  = models.CharField(max_length=36, default=None, null=True)
-
+    date_merged = models.DateTimeField(default='0000-00-00 00:00:00')
+    merged_by = models.CharField(max_length=36, default=None, null=True)

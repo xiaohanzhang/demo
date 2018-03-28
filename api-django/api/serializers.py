@@ -8,19 +8,22 @@ from .models import (
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'login', )
+        exclude = ('id', 'active', 'created_by', 'login')
 
-    login = serializers.SlugRelatedField(
-        many=False,
-        read_only=True,
-        slug_field='login_name'
-     )
+    user_id = serializers.UUIDField(read_only=True, source='pk')
+    login_name = serializers.SerializerMethodField()
+
+    def get_login_name(self, obj):
+        login = obj.login
+        return login.login_name if login else ''
 
 
 class TenantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
-        fields = ('id',)
+        fields = ('tenant_id', 'tenant_name', 'tenant_status', 'date_created')
+
+    tenant_id = serializers.UUIDField(read_only=True, source='pk')
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -49,83 +52,99 @@ class JobSerializer(serializers.ModelSerializer):
 class IndustrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Industry
-        exclude = []
+        exclude = ('id', 'tenant',)
 
-    tenant = TenantSerializer(many=False, read_only=True)
+    industry_id = serializers.UUIDField(read_only=True, source='pk')
+    # tenant = TenantSerializer(many=False, read_only=True)
     created_by = UserSerializer(many=False, read_only=True)
 
 
 class PhoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Phone
-        exclude = []
+        exclude = ('id', 'active', 'parent_id',)
 
+    phone_id = serializers.UUIDField(read_only=True, source='pk')
     created_by = UserSerializer(many=False, read_only=True)
 
 
 class TaxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tax
-        exclude = []
+        exclude = ('id', 'active', 'tenant')
 
-    tenant = TenantSerializer(many=False, read_only=True)
+    tax_id = serializers.UUIDField(read_only=True, source='pk')
+    # tenant = TenantSerializer(many=False, read_only=True)
     created_by = UserSerializer(many=False, read_only=True)
 
 
 class TermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Terms
-        exclude = []
+        exclude = ('id', 'active')
 
+    terms_id = serializers.UUIDField(read_only=True, source='pk')
     created_by = UserSerializer(many=False, read_only=True)
 
 
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
-        exclude = []
+        exclude = ('id', )
 
+    currency_id = serializers.UUIDField(read_only=True, source='pk')
     created_by = UserSerializer(many=False, read_only=True)
 
 
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
-        exclude = []
+        exclude = ('id',)
 
+    status_id = serializers.UUIDField(read_only=True, source='pk')
     created_by = UserSerializer(many=False, read_only=True)
 
 
 class CommissionClientRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommissionClientRate
-        exclude = []
+        exclude = ('id',)
 
+    commission_client_rate_id = serializers.UUIDField(read_only=True, source='pk')
     created_by = UserSerializer(many=False, read_only=True)
-
 
 
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
-        exclude = []
+        exclude = ('id',)
 
+    currency_id = serializers.UUIDField(read_only=True, source='pk')
     created_by = UserSerializer(many=False, read_only=True)
 
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        exclude = []
+        exclude = ('id', 'active', 'parent_contact')
 
+    contact_id = serializers.UUIDField(read_only=True, source='pk')
     contact_default_phone = PhoneSerializer(many=False, read_only=True)
+    created_by = UserSerializer(many=False, read_only=True)
 
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
+        exclude = ('id', 'active', 'parent', 'parent_client')
+        read_only_fields = ('client_id', 'date_created')
+        # depth = 1
+        # extra_kwargs
+        # validators
+        '''
+                exclude = ('id',)
         fields = (
-            'id', 'client_name', 'prospect', 'tenant', 'client_website', 'client_facebook',
+            'client_id', 'client_name', 'prospect', 'tenant', 'client_website', 'client_facebook',
             'client_twitter', 'client_tenant_account_number', 'client_order_margin_minimum',
             'sales_target', 'priority', 'primary_contact', 'secondary_contact', 'tertiary_contact',
             'industry', 'default_tax', 'default_terms', 'default_currency', 'sales_rep', 'client_tags',
@@ -133,7 +152,9 @@ class ClientSerializer(serializers.ModelSerializer):
             'quickbooks_id', 'date_quickbooks', 'latest_use', 'xero_contact_id', 'qbo_customer_ref',
             'date_merged', 'merged_by', 'date_created', 'active'
         )
+        '''
 
+    client_id = serializers.UUIDField(read_only=True, source='pk')
     tenant = TenantSerializer(many=False, read_only=True)
     primary_contact = ContactSerializer(many=False, read_only=True)
     secondary_contact = ContactSerializer(many=False, read_only=True)
@@ -147,4 +168,3 @@ class ClientSerializer(serializers.ModelSerializer):
     commission_client_rate = CommissionClientRateSerializer(many=False, read_only=True)
     created_by = UserSerializer(many=False, read_only=True)
     merged_by = UserSerializer(many=False, read_only=True)
-
