@@ -52,11 +52,11 @@ class JobSerializer(serializers.ModelSerializer):
 class IndustrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Industry
-        exclude = ('id', 'tenant',)
+        exclude = ('id', 'active', 'tenant', 'created_by', 'date_created')
 
     industry_id = serializers.UUIDField(read_only=True, source='pk')
     # tenant = TenantSerializer(many=False, read_only=True)
-    created_by = UserSerializer(many=False, read_only=True)
+    # created_by = UserSerializer(many=False, read_only=True)
 
 
 class PhoneSerializer(serializers.ModelSerializer):
@@ -71,20 +71,37 @@ class PhoneSerializer(serializers.ModelSerializer):
 class TaxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tax
-        exclude = ('id', 'active', 'tenant')
+        exclude = ('id', 'active', 'tenant', 'date_created', 'created_by')
 
     tax_id = serializers.UUIDField(read_only=True, source='pk')
     # tenant = TenantSerializer(many=False, read_only=True)
-    created_by = UserSerializer(many=False, read_only=True)
+    # created_by = UserSerializer(many=False, read_only=True)
 
 
 class TermsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Terms
-        exclude = ('id', 'active')
+        exclude = ('id', 'active', 'created_by', 'days_to_add', 'display_order', 'date_created')
 
     terms_id = serializers.UUIDField(read_only=True, source='pk')
-    created_by = UserSerializer(many=False, read_only=True)
+    # created_by = UserSerializer(many=False, read_only=True)
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Status
+        exclude = ('id', 'parent_type', 'flow_order')
+
+    status_id = serializers.UUIDField(read_only=True, source='pk')
+    # created_by = UserSerializer(many=False, read_only=True)
+
+
+class CommissionClientRateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommissionClientRate
+        exclude = ('id', )
+
+    commission_client_rate_id = serializers.UUIDField(read_only=True, source='pk')
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -93,34 +110,7 @@ class CurrencySerializer(serializers.ModelSerializer):
         exclude = ('id', )
 
     currency_id = serializers.UUIDField(read_only=True, source='pk')
-    created_by = UserSerializer(many=False, read_only=True)
-
-
-class StatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Status
-        exclude = ('id',)
-
-    status_id = serializers.UUIDField(read_only=True, source='pk')
-    created_by = UserSerializer(many=False, read_only=True)
-
-
-class CommissionClientRateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CommissionClientRate
-        exclude = ('id',)
-
-    commission_client_rate_id = serializers.UUIDField(read_only=True, source='pk')
-    created_by = UserSerializer(many=False, read_only=True)
-
-
-class CurrencySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Currency
-        exclude = ('id',)
-
-    currency_id = serializers.UUIDField(read_only=True, source='pk')
-    created_by = UserSerializer(many=False, read_only=True)
+    # created_by = UserSerializer(many=False, read_only=True)
 
 
 class ContactSerializer(serializers.ModelSerializer):
