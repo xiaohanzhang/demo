@@ -60,11 +60,22 @@ class File(models.Model):
     id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=36, db_column='file_id')
 
 
-class Department(models.Model):
+class Department(SoftDeleteModel):
     class Meta:
         db_table = 'departments'
 
     id = models.CharField(primary_key=True, default=uuid.uuid4, max_length=36, db_column='department_id')
+    department_name = models.CharField(max_length=255)
+    parent_type = models.CharField(
+        max_length=63,
+        default=None,
+        choices=(
+            ('SUPPLIER', 'SUPPLIER',),
+            ('CLIENT', 'CLIENT',),
+            ('TENANT', 'TENANT',),
+        )
+    )
+    ordering = models.IntegerField(default=None)
 
 
 class UserInvitation(models.Model):

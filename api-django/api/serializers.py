@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Tenant, Job, Order, User, Item, Client, Industry, Contact, Phone, Tax, Terms, Currency, Status,
-    CommissionClientRate
+    CommissionClientRate, Department
 )
 
 
@@ -57,6 +57,14 @@ class IndustrySerializer(serializers.ModelSerializer):
     industry_id = serializers.UUIDField(read_only=True, source='pk')
     # tenant = TenantSerializer(many=False, read_only=True)
     # created_by = UserSerializer(many=False, read_only=True)
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        exclude = ('id', 'active', 'parent_type', 'created_by', 'date_created', 'ordering')
+
+    department_id = serializers.UUIDField(read_only=True, source='pk')
 
 
 class PhoneSerializer(serializers.ModelSerializer):
@@ -121,6 +129,7 @@ class ContactSerializer(serializers.ModelSerializer):
     contact_id = serializers.UUIDField(read_only=True, source='pk')
     contact_default_phone = PhoneSerializer(many=False, read_only=True)
     created_by = UserSerializer(many=False, read_only=True)
+    contact_department = DepartmentSerializer(many=False, read_only=True)
 
 
 class ClientSerializer(serializers.ModelSerializer):
