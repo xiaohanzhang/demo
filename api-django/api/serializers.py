@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Tenant, Job, Order, User, Item, Client, Industry, Contact, Phone, Tax, Terms, Currency, Status,
-    CommissionClientRate, Department
+    CommissionClientRate, Department, Address
 )
 
 
@@ -121,6 +121,14 @@ class CurrencySerializer(serializers.ModelSerializer):
     # created_by = UserSerializer(many=False, read_only=True)
 
 
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        exclude = ('id', 'active', 'created_by', 'parent_id', 'parent_type')
+
+    address_id = serializers.UUIDField(read_only=True, source='pk')
+
+
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
@@ -130,6 +138,7 @@ class ContactSerializer(serializers.ModelSerializer):
     contact_default_phone = PhoneSerializer(many=False, read_only=True)
     # created_by = UserSerializer(many=False, read_only=True)
     contact_department = DepartmentSerializer(many=False, read_only=True)
+    contact_default_address = AddressSerializer(many=False, read_only=True)
 
 
 class ClientSerializer(serializers.ModelSerializer):
