@@ -15,7 +15,7 @@ class Tenant extends Model
         return $this->hasMany('App\Models\Job');
     }
 
-    public function industries()
+    public function industry()
     {
         return $this->belongsTo('App\Industry', 'tenant_id');
     }

@@ -188,6 +188,7 @@ class Tenant(SoftDeleteModel):
     tenant_default_address = models.ForeignKey('Address', on_delete=models.SET_NULL, null=True)
     tenant_default_job_template = models.ForeignKey('JobTemplate', on_delete=models.SET_NULL, null=True)
     default_currency = models.ForeignKey('Currency', on_delete=models.SET_NULL, null=True, default='USD')
+    primary_contact = models.ForeignKey('Contact', on_delete=models.SET_NULL, null=True)
     hidden = models.BooleanField(default=False)
 
 '''
