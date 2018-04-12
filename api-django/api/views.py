@@ -14,7 +14,17 @@ class TenantViewSet(viewsets.ModelViewSet):
 
 
 class ClientViewSet(viewsets.ModelViewSet):
-    queryset = Client.objects.all()
+    queryset = (Client.objects.all()
+        .select_related('primary_contact__contact_department')
+        .select_related('primary_contact__contact_default_phone')
+        .select_related('primary_contact__contact_default_address')
+        .select_related('industry')
+        .select_related('default_tax')
+        .select_related('default_terms')
+        .select_related('default_currency')
+        .select_related('sales_rep__login')
+        .select_related('account_status')
+    )
     serializer_class = ClientSerializer
 
 

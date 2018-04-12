@@ -140,7 +140,7 @@ self::query()
 ```
 
 # personal opinion 
-## Auth, CRUD, validator, middleware
+## Auth, CRUD, validator, middleware, cache, log
 django = laravel
 ## model
 django: model field type defination, multiple type of model inheritance, flexable model manager
@@ -150,11 +150,28 @@ python: django-orm / sqlalchemy both very good
 php: eloquent only handles simple CRUD query, need use raw query builder for complex join/filter
 ## performance
 php > python
-## development efficiency 
-python > php
-## library
-django > laravel(but laravel is growing faster)
+## library / tools
+django > laravel(laravel is growing)
+Usually python lib are easier to use and more elegant. (pdf, debuger) 
 ## documentation
 django: better text documentation
 laravel: lots of videos
+## django highlight
+class-based views
+django-filter
+```python
+class ProductFilter(django_filters.FilterSet):
+    class Meta:
+        model = Product
+        fields = {
+            'price': ['lt', 'gt'],
+            'release_date': ['exact', 'year__gt'],
+        }
 
+class ProductList(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = ProductFilter
+# url: /products?price__lt=100&price__gt=50&release_date__exact=2018-01-02
+```
