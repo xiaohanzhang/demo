@@ -2,6 +2,7 @@ from rest_framework import viewsets, filters, renderers
 from rest_framework.response import Response
 from rest_framework.decorators import list_route
 from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import FilterSet 
 from django.db import connection
 from django.db.models import Q
 from .models import Tenant, Job, Client
@@ -28,16 +29,24 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
 
 
+class JobFilter(FilterSet):
+    class Meta:
+        model = Job 
+        # url: /jobs?job_name=hello&job_number__lt=9999&job_number__gt=5000&date_created__year__gt=2016
+        fields = {
+            'job_name': ['exact'],
+            'job_number': ['lt', 'gt'],
+            'date_created': ['year__gt'],
+        }
+
+
 class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all().select_related('tenant').prefetch_related('orders__items')
     serializer_class = JobSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter,)
     search_fields = ('job_name', 'job_number', 'tenant__tenant_name')
     ordering_fields = ('date_created',)
-
-    def list(self, request, *args, **kwargs):
-        response = super(JobViewSet, self).list(request, *args, **kwargs)
-        return response
+    filter_class = JobFilter
 
     @list_route(methods=['get'])
     def complex_example(self, request):

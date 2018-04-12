@@ -157,21 +157,7 @@ Usually python lib are easier to use and more elegant. (pdf, debuger)
 django: better text documentation
 laravel: lots of videos
 ## django highlight
+migration
 class-based views
 django-filter
-```python
-class ProductFilter(django_filters.FilterSet):
-    class Meta:
-        model = Product
-        fields = {
-            'price': ['lt', 'gt'],
-            'release_date': ['exact', 'year__gt'],
-        }
-
-class ProductList(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = ProductFilter
-# url: /products?price__lt=100&price__gt=50&release_date__exact=2018-01-02
-```
+admin

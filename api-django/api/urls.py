@@ -6,7 +6,7 @@ from .views import TenantViewSet, JobViewSet, ClientViewSet
 
 router = routers.DefaultRouter()
 # router.register(r'tenants', TenantViewSet)
-# router.register(r'jobs', JobViewSet)
+router.register(r'jobs', JobViewSet)
 router.register(r'clients', ClientViewSet)
 
 schema_view = get_schema_view(
